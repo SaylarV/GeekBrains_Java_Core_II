@@ -1,14 +1,11 @@
 package GeekBrains_HW_Lesson_5;
 
-import java.util.stream.IntStream;
-
 public class ThreadsTest{
 
-    static final int arrOneSize = 1000000;
-    static final int arrTwoSize = arrOneSize / 2;
+    static final int arrSize = 1000000;    
 
     static void first(){
-        float[] arrayOne = new float[arrOneSize];
+        float[] arrayOne = new float[arrSize];
         for (int i = 1; i < arrayOne.length; i++)
             arrayOne[i] = 1;
         long startTime = System.currentTimeMillis();
@@ -19,13 +16,13 @@ public class ThreadsTest{
     }
 
     static void second(){
-        float[] arrayTwo = new float[arrTwoSize];
+        float[] arrayTwo = new float[arrSize];
         for (int i = 1; i < arrayTwo.length; i++)
             arrayTwo[i] = 1;
         long startTime = System.currentTimeMillis();
         System.currentTimeMillis();
-        float[] part1 = new float[arrTwoSize/2];
-        float[] part2 = new float[arrTwoSize-part1.length];
+        float[] part1 = new float[arrSize/2];
+        float[] part2 = new float[arrSize-part1.length];
         System.arraycopy(arrayTwo, 0, part1, 0, part1.length);
         System.arraycopy(arrayTwo, part1.length, part2, 0, part2.length);
 

@@ -2,23 +2,24 @@ package GeekBrains_HW_Lesson_5;
 
 public class ThreadsTest{
 
-    static final int arrSize = 1000000;    
+    static final int arrSize = 10_000_000;
 
     static void first(){
         float[] arrayOne = new float[arrSize];
         for (int i = 1; i < arrayOne.length; i++)
-            arrayOne[i] = 1;
+            arrayOne[i] = 1.0f;
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < arrayOne.length; i++)
             arrayOne[i] = (float) (arrayOne[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
         System.currentTimeMillis();
-        System.out.println(System.currentTimeMillis() - startTime);
+        System.out.println("Время без разбивки: " + (System.currentTimeMillis() - startTime));
+        //for (float v : arrayOne) System.out.print(v + " ");
     }
 
-    static void second(){
+    static void second() {
         float[] arrayTwo = new float[arrSize];
         for (int i = 1; i < arrayTwo.length; i++)
-            arrayTwo[i] = 1;
+            arrayTwo[i] = 1.0f;
         long startTime = System.currentTimeMillis();
         System.currentTimeMillis();
         float[] part1 = new float[arrSize/2];
@@ -26,20 +27,32 @@ public class ThreadsTest{
         System.arraycopy(arrayTwo, 0, part1, 0, part1.length);
         System.arraycopy(arrayTwo, part1.length, part2, 0, part2.length);
 
-        new Thread(() -> {
+        Thread tr1 = new Thread(() -> {
             for (int i = 0; i < part1.length; i++)
                 part1[i] = (float) (part1[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
-        }).start();
+        });
+        tr1.start();
 
-        new Thread(() -> {
+        Thread tr2 = new Thread(() -> {
             for (int i = 0; i < part2.length; i++)
-                part2[i] = (float) (part2[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
-        }).start();
+                part2[i] = (float) (part2[i] * Math.sin(0.2f + (i + part2.length) / 5) * Math.cos(0.2f + (i + part2.length) / 5) * Math.cos(0.4f + (i + part2.length) / 2));
+        });
+        tr2.start();
+
+        try {
+            tr1.join();
+            tr2.join();
+        } catch (InterruptedException e) {
+            System.out.println("Исполнение прервано...");
+            e.printStackTrace();
+        }
 
         System.arraycopy(part1, 0, arrayTwo, 0, part1.length);
         System.arraycopy(part2, 0, arrayTwo, part1.length, part2.length);
-        System.out.println(System.currentTimeMillis() - startTime);
-        //for (float v : arrayTwo) System.out.println(v);
+
+        System.out.println("Время с разбивкой и склейкой: " + (System.currentTimeMillis() - startTime));
+        //System.out.println();
+        //for (float v : arrayTwo) System.out.print(v + " ");
     }
 
     public static void main(String[] args) {

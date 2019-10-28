@@ -64,4 +64,13 @@ public class MyServer {
             client.sendMessage(message);
         }
     }
+
+    public void sendPrivateMessage(String privateNick, String message) {
+        for (ClientHandler client : clients) {
+            if (client.getClientName().equals(privateNick)) {
+                client.sendMessage(message);
+            }
+        }
+    }
+
 }

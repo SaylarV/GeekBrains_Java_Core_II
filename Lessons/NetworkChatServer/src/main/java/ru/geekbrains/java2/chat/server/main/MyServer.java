@@ -7,6 +7,7 @@ import ru.geekbrains.java2.chat.server.main.client.ClientHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,17 +23,19 @@ public class MyServer {
         System.out.println("Server is running");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             authService.start();
+            int timeToAuth = 120000;
             while (true) {
-                System.out.println("Awaiting client connection...");
+                System.out.println("Awaiting client connection... (you have "+(timeToAuth/1000)+" sec.)");
+                serverSocket.setSoTimeout(timeToAuth);
                 Socket socket = serverSocket.accept();
                 System.out.println("Client has connected");
                 new ClientHandler(socket, this);
             }
-
         } catch (IOException e) {
             System.err.println("Ошибка в работе сервера. Причина: " + e.getMessage());
             e.printStackTrace();
-        } finally {
+        }
+        finally {
             authService.stop();
         }
     }

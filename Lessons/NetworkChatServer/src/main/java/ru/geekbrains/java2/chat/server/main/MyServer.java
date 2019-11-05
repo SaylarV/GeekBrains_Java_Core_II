@@ -23,10 +23,8 @@ public class MyServer {
         System.out.println("Server is running");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             authService.start();
-            int timeToAuth = 120000;
             while (true) {
-                System.out.println("Awaiting client connection... (you have "+(timeToAuth/1000)+" sec.)");
-                serverSocket.setSoTimeout(timeToAuth);
+                System.out.println("Awaiting client connection...");
                 Socket socket = serverSocket.accept();
                 System.out.println("Client has connected");
                 new ClientHandler(socket, this);

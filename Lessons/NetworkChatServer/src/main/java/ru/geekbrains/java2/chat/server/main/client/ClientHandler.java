@@ -6,9 +6,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientHandler {
 
+    private static final long TIMEOUT = 120000;
     private MyServer myServer;
 
     private String clientName;
@@ -75,8 +78,22 @@ public class ClientHandler {
             String[] loginAndPasswords = clientMessage.split("\\s+");
             String login    = loginAndPasswords[1];
             String password = loginAndPasswords[2];
-
             String nick = myServer.getAuthService().getNickByLoginPass(login, password);
+            Timer timeout = new Timer(true);
+            timeout.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                            if (clientName == null) {
+                                System.out.println("Истекло время ожидания");
+                                socket.close();
+                            }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }, TIMEOUT);
+
             if (nick == null) {
                 sendMessage("Неверные логин/пароль");
                 return;
